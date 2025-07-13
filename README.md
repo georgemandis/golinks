@@ -1,6 +1,6 @@
 # Go Links Server
 
-A simple go link redirect server built with Deno that allows you to create short links accessible via a local hostanme (e.g. `go/<shortcut>`) or CLI interface.
+A simple go link redirect server built with Deno that allows you to create short links accessible via a local hostname (e.g. `go/<shortcut>`) or CLI interface.
 
 ## Features
 
@@ -28,7 +28,13 @@ A simple go link redirect server built with Deno that allows you to create short
 
 ### Global Installation
 
-Use [Deno's install command](https://docs.deno.com/runtime/reference/cli/install/#deno-install---global-%5Bpackage_or_url%5D) with the `--global` flag to install it globally:
+Use [Deno's install command](https://docs.deno.com/runtime/reference/cli/install/#deno-install---global-%5Bpackage_or_url%5D) with the `--global` flag to install it globally.
+
+If have Deno installed and you don't want to pull down the code you can run:
+
+```bash
+deno install --global --allow-read --allow-write --allow-env --allow-net --allow-run --config deno.json --name golinks https://raw.githubusercontent.com/georgemandis/golinks/refs/heads/main/cli.ts
+```
 
 1. **Install globally**:
    ```bash

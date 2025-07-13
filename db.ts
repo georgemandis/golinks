@@ -6,6 +6,7 @@ export interface GoLink {
   id: number;
   shortcut: string;
   url: string;
+  description?: string;
   created_at: string;
   updated_at: string;
   click_count: number;
@@ -29,17 +30,25 @@ export class GoLinksDB {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         shortcut TEXT UNIQUE NOT NULL,
         url TEXT NOT NULL,
+        description TEXT,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
         click_count INTEGER DEFAULT 0
       )
     `);
+
+    // Add description column if it doesn't exist (for existing databases)
+    try {
+      this.db.exec(`ALTER TABLE links ADD COLUMN description TEXT`);
+    } catch {
+      // Column already exists, ignore error
+    }
   }
 
-  addLink(shortcut: string, url: string): void {
+  addLink(shortcut: string, url: string, description?: string): void {
     this.db
-      .prepare(`INSERT INTO links (shortcut, url) VALUES (?, ?)`)
-      .run(shortcut, url);
+      .prepare(`INSERT INTO links (shortcut, url, description) VALUES (?, ?, ?)`)
+      .run(shortcut, url, description || null);
   }
 
   getLink(shortcut: string): GoLink | null {
@@ -56,12 +65,12 @@ export class GoLinksDB {
     return result.map((row) => this.mapRowToLink(row));
   }
 
-  updateLink(shortcut: string, url: string): boolean {
+  updateLink(shortcut: string, url: string, description?: string): boolean {
     const result = this.db
       .prepare(
-        `UPDATE links SET url = ?, updated_at = CURRENT_TIMESTAMP WHERE shortcut = ?`,
+        `UPDATE links SET url = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE shortcut = ?`,
       )
-      .run(url, shortcut);
+      .run(url, description || null, shortcut);
     return result.changes > 0;
   }
 
@@ -85,6 +94,7 @@ export class GoLinksDB {
       id: row.id,
       shortcut: row.shortcut,
       url: row.url,
+      description: row.description,
       created_at: row.created_at,
       updated_at: row.updated_at,
       click_count: row.click_count,

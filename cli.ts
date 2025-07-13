@@ -5,7 +5,7 @@ const db = new GoLinksDB();
 await db.init();
 
 const args = parseArgs(Deno.args, {
-  string: ["shortcut", "url"],
+  string: ["shortcut", "url", "description"],
   boolean: ["help", "list", "delete", "stats", "server"],
   alias: {
     h: "help",
@@ -13,6 +13,7 @@ const args = parseArgs(Deno.args, {
     d: "delete",
     s: "shortcut",
     u: "url",
+    desc: "description",
   },
 });
 
@@ -23,21 +24,22 @@ function printHelp() {
 Go Links CLI
 
 Usage:
-  golinks --help                     Show this help message
-  golinks --list                     List all links
-  golinks --stats                    Show statistics
-  golinks --server                   Start the web server
-  golinks --shortcut <name> --url <url>  Add a new link
-  golinks --delete --shortcut <name>     Delete a link
-  golinks <shortcut>                 Open shortcut in browser
+  golinks --help                                    Show this help message
+  golinks --list                                    List all links
+  golinks --stats                                   Show statistics
+  golinks --server                                  Start the web server
+  golinks --shortcut <name> --url <url> [--description <desc>]  Add a new link
+  golinks --delete --shortcut <name>                Delete a link
+  golinks <shortcut>                                Open shortcut in browser
 
 Examples:
+  golinks --shortcut gh --url https://github.com --description "GitHub homepage"
   golinks --shortcut gh --url https://github.com
   golinks --list
   golinks --delete --shortcut gh
   golinks --stats
   golinks --server
-  golinks gh                         Open the 'gh' shortcut
+  golinks gh                                        Open the 'gh' shortcut
   `);
 }
 
@@ -47,10 +49,11 @@ function formatTable(links: any[]) {
     return;
   }
 
-  const headers = ["Shortcut", "URL", "Clicks", "Created"];
+  const headers = ["Shortcut", "URL", "Description", "Clicks", "Created"];
   const rows = links.map((link) => [
     link.shortcut,
     link.url.length > 50 ? link.url.substring(0, 47) + "..." : link.url,
+    link.description ? (link.description.length > 30 ? link.description.substring(0, 27) + "..." : link.description) : "-",
     link.click_count.toString(),
     new Date(link.created_at).toLocaleDateString(),
   ]);
@@ -107,8 +110,9 @@ Statistics:
   }
 } else if (args.shortcut && args.url) {
   try {
-    db.addLink(args.shortcut, args.url);
-    console.log(`✓ Added link: ${args.shortcut} -> ${args.url}`);
+    db.addLink(args.shortcut, args.url, args.description);
+    const desc = args.description ? ` (${args.description})` : "";
+    console.log(`✓ Added link: ${args.shortcut} -> ${args.url}${desc}`);
   } catch (error) {
     console.log(`✗ Error adding link: ${error.message}`);
   }

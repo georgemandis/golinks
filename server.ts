@@ -30,6 +30,7 @@ const HTML_TEMPLATE = `
         <form method="POST" action="/_/add">
             <input type="text" name="shortcut" placeholder="Shortcut (e.g., 'gh')" required>
             <input type="url" name="url" placeholder="URL (e.g., 'https://github.com')" required>
+            <input type="text" name="description" placeholder="Description (optional)">
             <button type="submit">Add Link</button>
         </form>
     </div>
@@ -47,6 +48,7 @@ const HTML_TEMPLATE = `
                 <tr>
                     <th>Shortcut</th>
                     <th>URL</th>
+                    <th>Description</th>
                     <th>Clicks</th>
                     <th>Created</th>
                     <th>Actions</th>
@@ -66,8 +68,9 @@ function generateLinksTable(links: any[], url): string {
     .map(
       (link) => `
         <tr>
-            <td><a href="http://${url.hostname}/${link.shortcut}" target="_blank">${link.shortcut}</a></td>
+            <td><a href="http://${url.hostname}/${link.shortcut}" target="_blank">http://${url.hostname}/${link.shortcut}</a></td>
             <td><a href="${link.url}" target="_blank">${link.url}</a></td>
+            <td>${link.description || '-'}</td>
             <td>${link.click_count}</td>
             <td>${new Date(link.created_at).toLocaleDateString()}</td>
             <td>
@@ -111,10 +114,11 @@ export async function handleRequest(request: Request): Promise<Response> {
     const formData = await request.formData();
     const shortcut = formData.get("shortcut")?.toString();
     const url = formData.get("url")?.toString();
+    const description = formData.get("description")?.toString();
 
     if (shortcut && url) {
       try {
-        db.addLink(shortcut, url);
+        db.addLink(shortcut, url, description);
         return new Response("", {
           status: 302,
           headers: { Location: "/_" },

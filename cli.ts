@@ -56,7 +56,7 @@ function formatTable(links: any[]) {
   ]);
 
   const columnWidths = headers.map((header, i) =>
-    Math.max(header.length, ...rows.map((row) => row[i].length)),
+    Math.max(header.length, ...rows.map((row) => row[i].length))
   );
 
   function printRow(row: string[]) {
@@ -71,11 +71,15 @@ function formatTable(links: any[]) {
 if (args.help) {
   printHelp();
 } else if (args.server) {
-  console.log("Starting go links server on port 80");
-  console.log("Management interface available at http://go/_");
-
   const { handleRequest } = await import("./server.ts");
-  Deno.serve({ port: 80 }, handleRequest);
+
+  Deno.serve({
+    port: 80,
+    onListen({ port, hostname }) {
+      console.log(`Starting go links server on port ${port}`);
+      console.log(`Management interface available at http://localhost/_`);
+    },
+  }, handleRequest);
 } else if (args.list) {
   const links = db.getAllLinks();
   formatTable(links);
@@ -88,7 +92,11 @@ if (args.help) {
 Statistics:
   Total Links: ${links.length}
   Total Clicks: ${totalClicks}
-  Most Clicked: ${mostClicked ? `${mostClicked.shortcut} (${mostClicked.click_count} clicks)` : "None"}
+  Most Clicked: ${
+    mostClicked
+      ? `${mostClicked.shortcut} (${mostClicked.click_count} clicks)`
+      : "None"
+  }
   `);
 } else if (args.delete && args.shortcut) {
   const success = db.deleteLink(args.shortcut);
@@ -113,10 +121,9 @@ Statistics:
       const command = new Deno.Command(
         Deno.build.os === "windows" ? "cmd" : "open",
         {
-          args:
-            Deno.build.os === "windows"
-              ? ["/c", "start", link.url]
-              : [link.url],
+          args: Deno.build.os === "windows"
+            ? ["/c", "start", link.url]
+            : [link.url],
           stdout: "null",
           stderr: "null",
         },

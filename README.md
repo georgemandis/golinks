@@ -139,6 +139,47 @@ Or manage and use them via the CLI
 - `golinks docs` → redirects to your documentation
 - etc.
 
+## API Documentation
+
+This package provides a programmatic API for managing Go Links. View the full API documentation at [JSR.io](https://jsr.io/@georgemandis/golinks).
+
+### Basic Usage
+
+```ts
+import { GoLinksDB, type GoLink } from "@georgemandis/golinks";
+
+const db = new GoLinksDB();
+await db.init();
+
+// Add a new link
+db.addLink("gh", "https://github.com", "GitHub homepage");
+
+// Get a link
+const link = db.getLink("gh");
+console.log(link?.url); // "https://github.com"
+
+// List all links
+const allLinks = db.getAllLinks();
+
+// Update a link
+db.updateLink("gh", "https://github.com/myusername", "My GitHub profile");
+
+// Delete a link
+db.deleteLink("gh");
+
+// Clean up
+db.close();
+```
+
+### Server Integration
+
+```ts
+import { handleRequest } from "@georgemandis/golinks";
+
+// Use with Deno.serve
+Deno.serve({ port: 80 }, handleRequest);
+```
+
 ## Database Location
 
 Links are stored in `~/.golinks/db.sqlite`

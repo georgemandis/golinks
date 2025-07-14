@@ -1,4 +1,8 @@
 {
+  "name": "@georgemandis/golinks",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": "./cli.ts",
   "imports": {
     "@std/path": "jsr:@std/path@^1.0.0",
     "@std/fs": "jsr:@std/fs@^1.0.0",

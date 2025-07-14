@@ -1,5 +1,8 @@
 # Go Links Server & CLI Tool
 
+[![JSR](https://jsr.io/badges/@georgemandis/golinks)](https://jsr.io/@georgemandis/golinks)  [![JSR Score](https://jsr.io/badges/@georgemandis/golinks/score)](https://jsr.io/@georgemandis/golinks)
+
+
 A simple go link redirect server built with Deno that allows you to create short
 links accessible via a local hostname (e.g. `go/<shortcut>`) or CLI interface.
 

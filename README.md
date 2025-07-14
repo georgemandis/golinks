@@ -7,7 +7,7 @@ If have Deno installed and you don't want to pull down the code you can install
 the script like so:
 
 ```bash
-deno install --global --allow-read --allow-write --allow-env --allow-net --allow-run --config jsr:@georgemandis/golinks
+deno install --global --allow-read --allow-write --allow-env --allow-net --allow-run jsr:@georgemandis/golinks
 ```
 
 Run `golinks`

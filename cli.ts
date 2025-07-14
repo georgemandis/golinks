@@ -1,5 +1,5 @@
 import { parseArgs } from "@std/cli/parse-args";
-import { GoLinksDB } from "./db.ts";
+import { type GoLink, GoLinksDB } from "./db.ts";
 
 const db = new GoLinksDB();
 await db.init();
@@ -43,7 +43,7 @@ Examples:
   `);
 }
 
-function formatTable(links: any[]) {
+function formatTable(links: GoLink[]) {
   if (links.length === 0) {
     console.log("No links found.");
     return;
@@ -53,7 +53,11 @@ function formatTable(links: any[]) {
   const rows = links.map((link) => [
     link.shortcut,
     link.url.length > 50 ? link.url.substring(0, 47) + "..." : link.url,
-    link.description ? (link.description.length > 30 ? link.description.substring(0, 27) + "..." : link.description) : "-",
+    link.description
+      ? (link.description.length > 30
+        ? link.description.substring(0, 27) + "..."
+        : link.description)
+      : "-",
     link.click_count.toString(),
     new Date(link.created_at).toLocaleDateString(),
   ]);
@@ -78,7 +82,7 @@ if (args.help) {
 
   Deno.serve({
     port: 80,
-    onListen({ port, hostname }) {
+    onListen({ port }) {
       console.log(`Starting go links server on port ${port}`);
       console.log(`Management interface available at http://localhost/_`);
     },

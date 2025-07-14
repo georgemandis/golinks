@@ -47,7 +47,9 @@ export class GoLinksDB {
 
   addLink(shortcut: string, url: string, description?: string): void {
     this.db
-      .prepare(`INSERT INTO links (shortcut, url, description) VALUES (?, ?, ?)`)
+      .prepare(
+        `INSERT INTO links (shortcut, url, description) VALUES (?, ?, ?)`,
+      )
       .run(shortcut, url, description || null);
   }
 
@@ -62,7 +64,7 @@ export class GoLinksDB {
     const result = this.db
       .prepare(`SELECT * FROM links ORDER BY created_at DESC`)
       .all();
-    return result.map((row) => this.mapRowToLink(row));
+    return result.map((row: GoLink) => this.mapRowToLink(row));
   }
 
   updateLink(shortcut: string, url: string, description?: string): boolean {
@@ -89,7 +91,7 @@ export class GoLinksDB {
       .run(shortcut);
   }
 
-  private mapRowToLink(row: any): GoLink {
+  private mapRowToLink(row: GoLink): GoLink {
     return {
       id: row.id,
       shortcut: row.shortcut,

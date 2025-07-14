@@ -1,4 +1,4 @@
-import { GoLinksDB } from "./db.ts";
+import { type GoLink, GoLinksDB } from "./db.ts";
 
 const db = new GoLinksDB();
 await db.init();
@@ -63,14 +63,14 @@ const HTML_TEMPLATE = `
 </html>
 `;
 
-function generateLinksTable(links: any[], url): string {
+function generateLinksTable(links: GoLink[], url): string {
   return links
     .map(
       (link) => `
         <tr>
             <td><a href="http://${url.hostname}/${link.shortcut}" target="_blank">http://${url.hostname}/${link.shortcut}</a></td>
             <td><a href="${link.url}" target="_blank">${link.url}</a></td>
-            <td>${link.description || '-'}</td>
+            <td>${link.description || "-"}</td>
             <td>${link.click_count}</td>
             <td>${new Date(link.created_at).toLocaleDateString()}</td>
             <td>

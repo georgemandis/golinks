@@ -1,4 +1,4 @@
-# Go Links Server
+# Go Links Server & CLI Tool
 
 A simple go link redirect server built with Deno that allows you to create short
 links accessible via a local hostname (e.g. `go/<shortcut>`) or CLI interface.

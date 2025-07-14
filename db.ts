@@ -13,7 +13,7 @@ export interface GoLink {
 }
 
 export class GoLinksDB {
-  private db: DatabaseSync;
+  private db!: DatabaseSync;
   private dbPath: string;
 
   constructor() {
@@ -64,7 +64,7 @@ export class GoLinksDB {
     const result = this.db
       .prepare(`SELECT * FROM links ORDER BY created_at DESC`)
       .all();
-    return result.map((row: GoLink) => this.mapRowToLink(row));
+    return result.map((row: unknown) => this.mapRowToLink(row));
   }
 
   updateLink(shortcut: string, url: string, description?: string): boolean {
@@ -91,15 +91,16 @@ export class GoLinksDB {
       .run(shortcut);
   }
 
-  private mapRowToLink(row: GoLink): GoLink {
+  private mapRowToLink(row: unknown): GoLink {
+    const r = row as GoLink;
     return {
-      id: row.id,
-      shortcut: row.shortcut,
-      url: row.url,
-      description: row.description,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      click_count: row.click_count,
+      id: r.id,
+      shortcut: r.shortcut,
+      url: r.url,
+      description: r.description,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
+      click_count: r.click_count,
     };
   }
 

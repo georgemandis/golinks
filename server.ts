@@ -1,4 +1,5 @@
 import { type GoLink, GoLinksDB } from "./db.ts";
+import { printError } from "./utils.ts";
 
 const db = new GoLinksDB();
 await db.init();
@@ -63,7 +64,7 @@ const HTML_TEMPLATE = `
 </html>
 `;
 
-function generateLinksTable(links: GoLink[], url): string {
+function generateLinksTable(links: GoLink[], url: URL): string {
   return links
     .map(
       (link) => `
@@ -124,7 +125,11 @@ export async function handleRequest(request: Request): Promise<Response> {
           headers: { Location: "/_" },
         });
       } catch (error) {
-        return new Response(`Error: ${error.message}`, { status: 400 });
+        printError("Failed to add link", error);
+        return new Response(
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
+          { status: 400 },
+        );
       }
     }
     return new Response("Missing shortcut or URL", { status: 400 });

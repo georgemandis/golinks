@@ -1,5 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 import { type GoLink, GoLinksDB } from "./db.ts";
+import { printError } from "./utils.ts";
 
 const db = new GoLinksDB();
 await db.init();
@@ -118,7 +119,7 @@ Statistics:
     const desc = args.description ? ` (${args.description})` : "";
     console.log(`✓ Added link: ${args.shortcut} -> ${args.url}${desc}`);
   } catch (error) {
-    console.log(`✗ Error adding link: ${error.message}`);
+    printError("Error adding link", error);
   }
 } else if (firstArg && typeof firstArg === "string") {
   const link = db.getLink(firstArg);
@@ -138,7 +139,7 @@ Statistics:
       );
       await command.output();
     } catch (error) {
-      console.log(`✗ Failed to open browser: ${error.message}`);
+      printError("Failed to open browser", error);
       console.log(`URL: ${link.url}`);
     }
   } else {

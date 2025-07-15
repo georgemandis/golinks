@@ -19,7 +19,7 @@ jobs:
         run: |
           VERSION=$(jq -r '.version' deno.json)
           echo "Checking for version $VERSION on JSR…"
-          if curl -s https://jsr.io/@georgemandis/golinks/meta.json | jq -e ".versions[] | select(.version == \"$VERSION\")" > /dev/null; then
+          if curl -s https://jsr.io/@georgemandis/golinks/meta.json | jq -e ".versions[\"$VERSION\"] != null" > /dev/null; then
             echo "Version $VERSION already published — skipping."
             echo "skip_publish=true" >> $GITHUB_OUTPUT
           else

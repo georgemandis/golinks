@@ -3,14 +3,14 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     strategy:
       matrix:
         target:
@@ -18,16 +18,16 @@ jobs:
           - x86_64-pc-windows-msvc
           - x86_64-apple-darwin
           - aarch64-apple-darwin
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
-      
+          deno-version: v2.x
+
       - name: Set platform variables
         id: platform
         run: |
@@ -53,11 +53,11 @@ jobs:
               echo "ext=" >> $GITHUB_OUTPUT
               ;;
           esac
-      
+
       - name: Compile executable
         run: |
           deno compile --allow-read --allow-write --allow-env --allow-net --allow-run --target=${{ matrix.target }} --output=golinks-${{ github.ref_name }}-${{ steps.platform.outputs.os }}-${{ steps.platform.outputs.arch }}${{ steps.platform.outputs.ext }} cli.ts
-      
+
       - name: Upload executable
         uses: actions/upload-artifact@v4
         with:
@@ -69,13 +69,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-      
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:

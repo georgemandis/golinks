@@ -1,5 +1,3 @@
-# .github/workflows/publish.yml
-
 name: Publish
 
 on:
@@ -12,7 +10,23 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # The OIDC ID token is used for authentication with JSR.
+      id-token: write
     steps:
       - uses: actions/checkout@v4
-      - run: npx jsr publish
+
+      - name: Check if version is already published
+        id: check_version
+        run: |
+          VERSION=$(jq -r '.version' deno.json)
+          echo "Checking for version $VERSION on JSR…"
+          if curl -s https://jsr.io/@georgemandis/golinks/meta.json | jq -e ".versions[] | select(.version == \"$VERSION\")" > /dev/null; then
+            echo "Version $VERSION already published — skipping."
+            echo "skip_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version $VERSION not published — proceeding."
+            echo "skip_publish=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish with JSR
+        if: steps.check_version.outputs.skip_publish == 'false'
+        run: npx jsr publish
